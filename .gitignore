@@ -19,5 +19,14 @@ _cgo_export.*
 
 _testmain.go
 
+gin-bin
+
 *.exe
 *.test
+
+._*
+*.swp  
+.DS_Store  
+
+*.sublime-project
+*.sublime-workspace
