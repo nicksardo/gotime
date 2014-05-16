@@ -24,6 +24,7 @@ gin-bin
 *.exe
 *.test
 
+.idea
 ._*
 *.swp  
 .DS_Store  
