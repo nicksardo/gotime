@@ -11,5 +11,5 @@ func NowHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func Now() string {
-	return strconv.FormatInt((time.Now().UnixNano() / 1e6)+60e3, 10)
+	return strconv.FormatInt(time.Now().UnixNano() / 1e6, 10)
 }
