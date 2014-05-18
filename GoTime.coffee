@@ -32,20 +32,27 @@ class window.GoTime
       setInterval GoTime._sync, GoTime._syncInterval
     return
 
+  # Public Getters
   @now: () =>
     new Date(Date.now() + @_offset)
 
+  @getOffset: () =>
+    @_offset
+
+  @getPrecision: () =>
+    @_precision
+
+  # Setters
   @setAjaxURL = (url) =>
     @_ajaxURL = url
     GoTime._setupSync()
 
-
+  # Callbacks
   @whenSynced: (callback) =>
     @_firstSyncCallback = callback
 
   @onSync: (callback) =>
     @_onSyncCallback = callback
-
 
   @wsSend: (callback) =>
     @_wsCall = callback
@@ -56,17 +63,14 @@ class window.GoTime
     sample = GoTime._calculateOffset @_wsRequestTime, responseTime, serverTime
     GoTime._reviseOffset sample
 
-  @getOffset: () =>
-    @_offset
-  @getPrecision: () =>
-    @_precision
 
+  # Private Methods
   @_ajaxSample = (i, callback) =>
     req = new XMLHttpRequest()
     req.open("GET", GoTime._ajaxURL);
     req.onreadystatechange = () ->
       responseTime = Date.now()
-      if req.readyState is 4                        # ReadyState Compelte
+      if req.readyState is 4
         if req.status is 200
           serverTime = GoTime._dateFromService req.responseText
           sample = GoTime._calculateOffset requestTime, responseTime, serverTime
@@ -90,9 +94,6 @@ class window.GoTime
         @_syncCount++
         return
 
-#    max = @ajaxSampleSize
-#    samples = (sample num for num in [0..max])
-
 
   @_calculateOffset: (requestTime, responseTime, serverTime) ->
     duration = responseTime - requestTime
@@ -105,7 +106,6 @@ class window.GoTime
 
   @_reviseOffset: (sample) =>
     if isNaN(sample.offset) or isNaN(sample.precision)
-      console.log("NaNs")
       return
 
     @_offset = sample.offset
@@ -117,7 +117,6 @@ class window.GoTime
       @_firstSyncCallback()
     else if @_onSyncCallback?
       @_onSyncCallback()
-
 
   @_dateFromService: (text) =>
     return new Date(parseInt(text))

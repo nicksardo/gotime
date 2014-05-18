@@ -45,6 +45,14 @@
       return new Date(Date.now() + GoTime._offset);
     };
 
+    GoTime.getOffset = function() {
+      return GoTime._offset;
+    };
+
+    GoTime.getPrecision = function() {
+      return GoTime._precision;
+    };
+
     GoTime.setAjaxURL = function(url) {
       GoTime._ajaxURL = url;
       return GoTime._setupSync();
@@ -68,14 +76,6 @@
       serverTime = GoTime._dateFromService(serverTimeString);
       sample = GoTime._calculateOffset(GoTime._wsRequestTime, responseTime, serverTime);
       return GoTime._reviseOffset(sample);
-    };
-
-    GoTime.getOffset = function() {
-      return GoTime._offset;
-    };
-
-    GoTime.getPrecision = function() {
-      return GoTime._precision;
     };
 
     GoTime._ajaxSample = function(i, callback) {
@@ -128,7 +128,6 @@
 
     GoTime._reviseOffset = function(sample) {
       if (isNaN(sample.offset) || isNaN(sample.precision)) {
-        console.log("NaNs");
         return;
       }
       GoTime._offset = sample.offset;
