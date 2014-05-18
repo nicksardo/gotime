@@ -1,76 +1,126 @@
 class window.GoTime
+  @_syncCount: 0
   @_offset: 0
   @_precision: null
-  @_firstSyncCallbackRan: false
   @_lastSyncTime: null
-  @_syncInterval: 600000
-  @_ajaxSampleSize: 1
+  @_syncInterval: 900000
   @_synchronizing: false
+
+  @_ajaxURL: null
+  @_ajaxSampleSize: 1
+
+  @_firstSyncCallbackRan: false
   @_firstSyncCallback: null
+  @_onSyncCallback: null
+
+  @_wsCall: null
+  @_wsRequestTime: null
 
   constructor: () ->
-    if GoTime._synchronizing is false
-      setInterval GoTime._sync, GoTime._syncInterval
-      GoTime._synchronizing = true
-      GoTime._sync()
-
+    GoTime._setupSync
     return GoTime.now()
+
+
+  @_setupSync: () =>
+    if GoTime._synchronizing is false
+      GoTime._synchronizing = true
+      # Sync now
+      GoTime._sync()
+      # Sync in four seconds
+      setTimeout(GoTime._sync, 4000);
+      # Sync every quarter hour
+      setInterval GoTime._sync, GoTime._syncInterval
+    return
 
   @now: () =>
     new Date(Date.now() + @_offset)
+
+  @setAjaxURL = (url) =>
+    @_ajaxURL = url
+    GoTime._setupSync()
 
 
   @whenSynced: (callback) =>
     @_firstSyncCallback = callback
 
+  @onSync: (callback) =>
+    @_onSyncCallback = callback
+
+
+  @wsSend: (callback) =>
+    @_wsCall = callback
+
+  @wsReceived: (serverTimeString) =>
+    responseTime = Date.now()
+    serverTime = GoTime._dateFromService serverTimeString
+    sample = GoTime._calculateOffset @_wsRequestTime, responseTime, serverTime
+    GoTime._reviseOffset sample
+
   @getOffset: () =>
     @_offset
+  @getPrecision: () =>
+    @_precision
 
-  @_ajaxSample = (i, callback) ->
+  @_ajaxSample = (i, callback) =>
     req = new XMLHttpRequest()
-    req.open("GET", '/time');
+    req.open("GET", GoTime._ajaxURL);
     req.onreadystatechange = () ->
       responseTime = Date.now()
       if req.readyState is 4                        # ReadyState Compelte
         if req.status is 200
-          serverTime = new Date(parseInt(req.responseText)).getTime()
+          serverTime = GoTime._dateFromService req.responseText
           sample = GoTime._calculateOffset requestTime, responseTime, serverTime
-          callback i, sample
+          GoTime._reviseOffset sample
           return
 
-    requestTime = Date.now();
+    requestTime = Date.now()
     req.send()
-    return null
+    return true
 
   @_sync: () =>
-    GoTime._ajaxSample 1, (i, sample) ->
-      GoTime._reviseOffset sample
+    if GoTime._wsCall?
+      @_wsRequestTime = Date.now()
+      success = GoTime._wsCall()
+      if success
+        @_syncCount++
+        return
+    if GoTime._ajaxURL?
+      success = GoTime._ajaxSample 1
+      if success
+        @_syncCount++
+        return
 
 #    max = @ajaxSampleSize
 #    samples = (sample num for num in [0..max])
 
 
-    return
-
   @_calculateOffset: (requestTime, responseTime, serverTime) ->
     duration = responseTime - requestTime
-    precision = duration / 2
+    oneway = duration / 2
     return {
-      offset: serverTime + precision - responseTime
-      precision: precision
+      offset: serverTime - requestTime + oneway
+      precision: oneway
     }
 
 
   @_reviseOffset: (sample) =>
+    if isNaN(sample.offset) or isNaN(sample.precision)
+      console.log("NaNs")
+      return
+
     @_offset = sample.offset
     @_precision = sample.precision
     @_lastSyncTime = GoTime.now()
 
     if !@_firstSyncCallbackRan and @_firstSyncCallback?
+      @_firstSyncCallbackRan = true
       @_firstSyncCallback()
-    else
+    else if @_onSyncCallback?
+      @_onSyncCallback()
 
 
+  @_dateFromService: (text) =>
+    return new Date(parseInt(text))
 
 #  @analyzeSamples: (samples) =>
 #    totalPrecision = samples.reduce (sum, sample) ->

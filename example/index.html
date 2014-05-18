@@ -9,8 +9,10 @@ Server:<br />
 <h1 id="server"></h1>
 Server 2:<br />
 <h1 id="server2"></h1>
-Difference:<br />
-<h1 id="difference"></h1> (local-server)
+Offset:<br />
+<h1 id="offset"></h1>
+Precision:<br />
+<h1 id="precision"></h1>
 <script src="GoTime.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
@@ -22,9 +24,11 @@ Difference:<br />
         $('#local').text((new Date()).toUTCString());
         $('#server').text((new GoTime()).toUTCString());
 
-        GoTime.whenSynced(function(){
+        GoTime.setAjaxURL("/time")
+        GoTime.onSync(function(){
             $('#server2').text((new GoTime()).toUTCString());
-            $('#difference').text(GoTime.getOffset());
+            $('#offset').text(GoTime.getOffset());
+            $('#precision').text(GoTime.getPrecision());
         });
 
     });
