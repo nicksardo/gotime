@@ -4,7 +4,7 @@ GoTime
 Access the server's time from your browser with high precision
 This project is used for chronograph.io, a website that syncs stopwatches across devices.  In order to synchronize the stopwatch actions (start/stop/split), GoTime provides the browser with a close estimate of the server's current time.
 
-This project was built to be used by Go, but it can be used by any serverside language.  Just expose a web service that provides the current unix time.
+This project was built to be used by Go, but it can be used by any serverside language.  Just expose a web service that provides the current unix time (in milliseconds).
 
 Setup
 -----
@@ -25,7 +25,7 @@ Setup
   // if using webservice: how to handle websocket response
   {
     // if response contains time...
-      GoTime.wsReceived(msg)   // with msg being the unix time string
+      GoTime.wsReceived(msg)   // with msg being the unix (ms) time string
   }
   
 ```
@@ -35,7 +35,7 @@ Exposing Server Time
 Chronograph.io syncs using an ajax call and websocket messages.  The reason is because the websocket connection may not be open in time for use.  Using just an ajax service is fine; however, you can get acheive more precise measurements by using websockets.  For a specific test of Chronograph.io, the initial ajax call resulted in a precision=78ms.  The next call using websockets acheived precision=11ms.
 
 **Web Service**  
-Simply a webservice that returns the server's unix time.  For go, see gotime.Handler or gotime.Now()
+Simply a webservice that returns the server's unix (ms) time.  For go, see gotime.Handler or gotime.Now()
 
 
 **Websocket**  
