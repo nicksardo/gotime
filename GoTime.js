@@ -29,7 +29,7 @@
 
     function GoTime() {
       GoTime._setupSync;
-      return GoTime.now();
+      return new Date(GoTime.now());
     }
 
     GoTime._setupSync = function() {
@@ -42,7 +42,7 @@
     };
 
     GoTime.now = function() {
-      return new Date(Date.now() + GoTime._offset);
+      return Date.now() + GoTime._offset;
     };
 
     GoTime.getOffset = function() {

@@ -18,7 +18,7 @@ class window.GoTime
 
   constructor: () ->
     GoTime._setupSync
-    return GoTime.now()
+    return new Date(GoTime.now())
 
 
   @_setupSync: () =>
@@ -34,7 +34,7 @@ class window.GoTime
 
   # Public Getters
   @now: () =>
-    new Date(Date.now() + @_offset)
+    Date.now() + @_offset
 
   @getOffset: () =>
     @_offset
