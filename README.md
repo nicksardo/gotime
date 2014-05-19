@@ -35,7 +35,7 @@ Exposing Server Time
 Chronograph.io syncs using an ajax call and websocket messages.  The reason is because the websocket connection may not be open in time for use.  Using just an ajax service is fine; however, you can get acheive more precise measurements by using websockets.  For a specific test of Chronograph.io, the initial ajax call resulted in a precision=78ms.  The next call using websockets acheived precision=11ms.
 
 **Web Service**  
-Simply a webservice that returns the server's unix (ms) time.  For go, see gotime.Handler or gotime.Now()
+Simply a webservice that returns the server's unix (ms) time.  For go, see gotime.NowHandler or gotime.Now()
 
 
 **Websocket**  
