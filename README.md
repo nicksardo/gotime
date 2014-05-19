@@ -9,7 +9,7 @@ This project was built to be used by Go, but it can be used by any serverside la
 Setup
 -----
 1.  Expose your server's date through a webservice and/or websocket message. Further explained below.
-2.  Include a link to GoTime.js in your html.
+2.  Include a link to GoTime.js in your html.  
       <script src="/js/GoTime.js"></script>
 3.  Set the GoTime options in javascript to acccess either web service or websocket or both.
 ```javascript    
@@ -30,21 +30,21 @@ Setup
   
 ```
 
-Exposing Server Time
---------------------
+Exposing Server Time  
+--------------------  
 Chronograph.io syncs using an ajax call and websocket messages.  The reason is because the websocket connection may not be open in time for use.  Using just an ajax service is fine; however, you can get acheive more precise measurements by using websockets.  For a specific test of Chronograph.io, the initial ajax call resulted in a precision=78ms.  The next call using websockets acheived precision=11ms.
 
-**Web Service**
+**Web Service**  
 Simply a webservice that returns the server's unix time.  For go, see gotime.Handler or gotime.Now()
 
 
-**Websocket**
+**Websocket**  
 As shown in the setup portion, iplementing the messaging is up to you, but you must provide GoTime with a callback that will send the time request and notify GoTime when the response arrives.
 
 
-Usage After Setup
------------------
-At any time, you can call GoTime() to get a Date object.  However, GoTime might not have had a chance to sync yet, so either expect the internal clock offset to change.
+Usage After Setup  
+-----------------  
+At any time, you can call GoTime() to get a Date object.  However, GoTime might not have had a chance to sync yet, so either expect the internal clock offset to change.  
 ```javascript
 var time = new GoTime();
 // Mon May 19 2014 15:38:07 GMT-0700 (PDT)
@@ -53,7 +53,7 @@ var time = GoTime.now()
 // 1400539092790
 ```
 
-You can also use these callbacks to wait until GoTime has synced.
+You can also use these callbacks to wait until GoTime has synced.  
 ```javascript    
 	// Calls a method after every sync, except for the first sync
 	GoTime.onSync(updateClockStats);
@@ -61,6 +61,6 @@ You can also use these callbacks to wait until GoTime has synced.
 	GoTime.whenSynced(run)
 ```
 
-**Internal Information**
-GoTime.getOffset() // returns the difference between your clock and servertime.  Positive or negative
+**Internal Information**  
+GoTime.getOffset() // returns the difference between your clock and servertime.  Positive or negative  
 GoTime.getPrecision() // returns the number of milliseconds GoTime may differ from servertime.  Positive
