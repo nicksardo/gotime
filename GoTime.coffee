@@ -2,9 +2,12 @@ class window.GoTime
   @_syncCount: 0
   @_offset: 0
   @_precision: null
-  @_lastSyncTime: null
+
+  @_syncSecondTimeout: 2000
   @_syncInterval: 900000
   @_synchronizing: false
+  @_lastSyncTime: null
+  @_lastSyncMethod: null
 
   @_ajaxURL: null
   @_ajaxSampleSize: 1
@@ -17,9 +20,8 @@ class window.GoTime
   @_wsRequestTime: null
 
   constructor: () ->
-    GoTime._setupSync
+    GoTime._setupSync()
     return new Date(GoTime.now())
-
 
   @_setupSync: () =>
     if GoTime._synchronizing is false
@@ -27,7 +29,7 @@ class window.GoTime
       # Sync now
       GoTime._sync()
       # Sync in four seconds
-      setTimeout(GoTime._sync, 4000);
+      setTimeout(GoTime._sync, GoTime._syncSecondTimeout);
       # Sync every quarter hour
       setInterval GoTime._sync, GoTime._syncInterval
     return
@@ -42,18 +44,29 @@ class window.GoTime
   @getPrecision: () =>
     @_precision
 
+  @getLastMethod: () =>
+    @_lastSyncMethod
+
+  @getSyncCount: () =>
+    @_syncCount
+
   # Setters
-  @setAjaxURL = (url) =>
-    @_ajaxURL = url
+  @setOptions = (options) =>
+    if options.AjaxURL?
+      @_ajaxURL = options.AjaxURL
+    if options.SyncSecondTimeout?
+      @_syncSecondTimeout = options.SyncSecondTimeout
+    if options.SyncInterval?
+      @_syncInterval = options.SyncInterval
+
+    if options.OnSync?
+      @_onSyncCallback = options.OnSync
+    if options.WhenSynced?
+      @_firstSyncCallback = options.WhenSynced
+
     GoTime._setupSync()
 
   # Callbacks
-  @whenSynced: (callback) =>
-    @_firstSyncCallback = callback
-
-  @onSync: (callback) =>
-    @_onSyncCallback = callback
-
   @wsSend: (callback) =>
     @_wsCall = callback
 
@@ -61,7 +74,7 @@ class window.GoTime
     responseTime = Date.now()
     serverTime = GoTime._dateFromService serverTimeString
     sample = GoTime._calculateOffset @_wsRequestTime, responseTime, serverTime
-    GoTime._reviseOffset sample
+    GoTime._reviseOffset sample, "websocket"
 
 
   # Private Methods
@@ -74,7 +87,7 @@ class window.GoTime
         if req.status is 200
           serverTime = GoTime._dateFromService req.responseText
           sample = GoTime._calculateOffset requestTime, responseTime, serverTime
-          GoTime._reviseOffset sample
+          GoTime._reviseOffset sample, "ajax"
           return
 
     requestTime = Date.now()
@@ -104,13 +117,14 @@ class window.GoTime
     }
 
 
-  @_reviseOffset: (sample) =>
+  @_reviseOffset: (sample, method) =>
     if isNaN(sample.offset) or isNaN(sample.precision)
       return
 
     @_offset = sample.offset
     @_precision = sample.precision
     @_lastSyncTime = GoTime.now()
+    @_lastSyncMethod = method
 
     if !@_firstSyncCallbackRan and @_firstSyncCallback?
       @_firstSyncCallbackRan = true

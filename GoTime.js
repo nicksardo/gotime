@@ -7,11 +7,15 @@
 
     GoTime._precision = null;
 
-    GoTime._lastSyncTime = null;
+    GoTime._syncSecondTimeout = 2000;
 
     GoTime._syncInterval = 900000;
 
     GoTime._synchronizing = false;
+
+    GoTime._lastSyncTime = null;
+
+    GoTime._lastSyncMethod = null;
 
     GoTime._ajaxURL = null;
 
@@ -28,7 +32,7 @@
     GoTime._wsRequestTime = null;
 
     function GoTime() {
-      GoTime._setupSync;
+      GoTime._setupSync();
       return new Date(GoTime.now());
     }
 
@@ -36,7 +40,7 @@
       if (GoTime._synchronizing === false) {
         GoTime._synchronizing = true;
         GoTime._sync();
-        setTimeout(GoTime._sync, 4000);
+        setTimeout(GoTime._sync, GoTime._syncSecondTimeout);
         setInterval(GoTime._sync, GoTime._syncInterval);
       }
     };
@@ -53,17 +57,31 @@
       return GoTime._precision;
     };
 
-    GoTime.setAjaxURL = function(url) {
-      GoTime._ajaxURL = url;
+    GoTime.getLastMethod = function() {
+      return GoTime._lastSyncMethod;
+    };
+
+    GoTime.getSyncCount = function() {
+      return GoTime._syncCount;
+    };
+
+    GoTime.setOptions = function(options) {
+      if (options.AjaxURL != null) {
+        GoTime._ajaxURL = options.AjaxURL;
+      }
+      if (options.SyncSecondTimeout != null) {
+        GoTime._syncSecondTimeout = options.SyncSecondTimeout;
+      }
+      if (options.SyncInterval != null) {
+        GoTime._syncInterval = options.SyncInterval;
+      }
+      if (options.OnSync != null) {
+        GoTime._onSyncCallback = options.OnSync;
+      }
+      if (options.WhenSynced != null) {
+        GoTime._firstSyncCallback = options.WhenSynced;
+      }
       return GoTime._setupSync();
-    };
-
-    GoTime.whenSynced = function(callback) {
-      return GoTime._firstSyncCallback = callback;
-    };
-
-    GoTime.onSync = function(callback) {
-      return GoTime._onSyncCallback = callback;
     };
 
     GoTime.wsSend = function(callback) {
@@ -75,7 +93,7 @@
       responseTime = Date.now();
       serverTime = GoTime._dateFromService(serverTimeString);
       sample = GoTime._calculateOffset(GoTime._wsRequestTime, responseTime, serverTime);
-      return GoTime._reviseOffset(sample);
+      return GoTime._reviseOffset(sample, "websocket");
     };
 
     GoTime._ajaxSample = function(i, callback) {
@@ -89,7 +107,7 @@
           if (req.status === 200) {
             serverTime = GoTime._dateFromService(req.responseText);
             sample = GoTime._calculateOffset(requestTime, responseTime, serverTime);
-            GoTime._reviseOffset(sample);
+            GoTime._reviseOffset(sample, "ajax");
           }
         }
       };
@@ -126,13 +144,14 @@
       };
     };
 
-    GoTime._reviseOffset = function(sample) {
+    GoTime._reviseOffset = function(sample, method) {
       if (isNaN(sample.offset) || isNaN(sample.precision)) {
         return;
       }
       GoTime._offset = sample.offset;
       GoTime._precision = sample.precision;
       GoTime._lastSyncTime = GoTime.now();
+      GoTime._lastSyncMethod = method;
       if (!GoTime._firstSyncCallbackRan && (GoTime._firstSyncCallback != null)) {
         GoTime._firstSyncCallbackRan = true;
         return GoTime._firstSyncCallback();
