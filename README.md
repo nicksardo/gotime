@@ -4,16 +4,27 @@ GoTime
 Access the server's time from your browser with high precision
 This project is used for chronograph.io, a website that syncs stopwatches across devices.  In order to synchronize the stopwatch actions (start/stop/split), GoTime provides the browser with a close estimate of the server's current time.
 
-This project was built to be used by Go, but it can be used by any serverside language.  Just expose a web service that provides the current unix time (in milliseconds).
+This project was built to be used by Go, but it can be used by any server-side language.  Just expose a web service that provides the current unix time (in milliseconds).
 
 Setup
 -----
 1.  Expose your server's date through a webservice and/or websocket message. Further explained below.
 2.  Include a link to GoTime.js in your html.  
       <script src="/js/GoTime.js"></script>
-3.  Set the GoTime options in javascript to acccess either web service or websocket or both.
-```javascript    
-  GoTime.setAjaxURL("/time")    // chronograph.io/time returns a response such as: 1400538485314
+3.  Set the GoTime options in javascript to access either web service or websocket or both.
+```javascript
+  GoTime.setOptions({
+    AjaxURL: "/time",
+    SyncSecondTimeout: 2000,   // Do second sync two seconds after initial sync  [default]
+    SyncInterval: 900000,       // Follow-up syncs happen at interval of 15 minutes [default]
+    WhenSync: function() {
+        console.log("Synced for first time")
+    },
+    OnSync: function(){
+        console.log("Synced for second or higher time")
+    }
+  })
+
   GoTime.wsSend(function(){
 		if (socket !== null && socket.readyState === 1) {
 			sendEvent("time")
@@ -39,7 +50,7 @@ Simply a webservice that returns the server's unix (ms) time.  For go, see gotim
 
 
 **Websocket**  
-As shown in the setup portion, iplementing the messaging is up to you, but you must provide GoTime with a callback that will send the time request and notify GoTime when the response arrives.
+As shown in the setup portion, implementing the messaging is up to you, but you must provide GoTime with a callback that will send the time request and notify GoTime when the response arrives.
 
 
 Usage After Setup  
@@ -61,6 +72,23 @@ You can also use these callbacks to wait until GoTime has synced.
 	GoTime.whenSynced(run)
 ```
 
-**Internal Information**  
-GoTime.getOffset() // returns the difference between your clock and servertime.  Positive or negative  
-GoTime.getPrecision() // returns the number of milliseconds GoTime may differ from servertime.  Positive
+**Internal Information**
+```javascript
+GoTime.getOffset()
+```
+// returns the difference between your clock and servertime.  Positive or negative
+
+```javascript
+GoTime.getPrecision()
+```
+// returns the number of milliseconds GoTime may differ from servertime.
+
+```javascript
+GoTime.getLastMethod()
+```
+// returns "ajax" or "websocket" for the last sync method
+
+```javascript
+GoTime.getSyncCount()
+```
+// returns amount of times GoTime has synced
