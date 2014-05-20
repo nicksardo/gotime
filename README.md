@@ -33,11 +33,12 @@ Setup
 		return false // tell GoTime that websocket sending failed, try ajax webservice
 	});
 
-  // if using webservice: how to handle websocket response
-  {
-    // if response contains time...
-      GoTime.wsReceived(msg)   // with msg being the unix (ms) time string
-  }
+
+    ....
+    // when processing websocket messages client-side
+    // if response contains time, notify GoTime immediately with the data
+    GoTime.wsReceived(msg.data)   // with msg.data = the unix (ms) time string
+
   
 ```
 
