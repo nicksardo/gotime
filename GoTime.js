@@ -7,7 +7,9 @@
 
     GoTime._precision = null;
 
-    GoTime._syncSecondTimeout = 2000;
+    GoTime._syncSecondTimeout = 3000;
+
+    GoTime._syncThirdTimeout = 6000;
 
     GoTime._syncInterval = 900000;
 
@@ -41,6 +43,7 @@
         GoTime._synchronizing = true;
         GoTime._sync();
         setTimeout(GoTime._sync, GoTime._syncSecondTimeout);
+        setTimeout(GoTime._sync, GoTime._syncThirdTimeout);
         setInterval(GoTime._sync, GoTime._syncInterval);
       }
     };
@@ -71,6 +74,9 @@
       }
       if (options.SyncSecondTimeout != null) {
         GoTime._syncSecondTimeout = options.SyncSecondTimeout;
+      }
+      if (options.SyncSecondTimeout != null) {
+        GoTime._syncThirdTimeout = options.SyncThirdTimeout;
       }
       if (options.SyncInterval != null) {
         GoTime._syncInterval = options.SyncInterval;

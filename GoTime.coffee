@@ -3,7 +3,8 @@ class window.GoTime
   @_offset: 0
   @_precision: null
 
-  @_syncSecondTimeout: 2000
+  @_syncSecondTimeout: 3000
+  @_syncThirdTimeout: 6000
   @_syncInterval: 900000
   @_synchronizing: false
   @_lastSyncTime: null
@@ -28,9 +29,11 @@ class window.GoTime
       GoTime._synchronizing = true
       # Sync now
       GoTime._sync()
-      # Sync in four seconds
+      # Second Sync
       setTimeout(GoTime._sync, GoTime._syncSecondTimeout);
-      # Sync every quarter hour
+      # Third Sync
+      setTimeout(GoTime._sync, GoTime._syncThirdTimeout);
+      # Sync repetitively
       setInterval GoTime._sync, GoTime._syncInterval
     return
 
@@ -56,6 +59,8 @@ class window.GoTime
       @_ajaxURL = options.AjaxURL
     if options.SyncSecondTimeout?
       @_syncSecondTimeout = options.SyncSecondTimeout
+    if options.SyncSecondTimeout?
+      @_syncThirdTimeout = options.SyncThirdTimeout
     if options.SyncInterval?
       @_syncInterval = options.SyncInterval
 
