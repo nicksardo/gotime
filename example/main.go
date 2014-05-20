@@ -21,5 +21,7 @@ func main() {
 		http.ServeFile(w, r, "../GoTime.js")
 	})
 
+    http.HandleFunc("/ws", wsHandler)
+
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

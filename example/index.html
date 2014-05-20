@@ -9,6 +9,8 @@ Server:<br />
 <h1 id="server"></h1>
 Server 2:<br />
 <h1 id="server2"></h1>
+Sync Count: Method:<br />
+<h1 id="method"></h1>
 Offset:<br />
 <h1 id="offset"></h1>
 Precision:<br />
@@ -18,18 +20,44 @@ Precision:<br />
 
 <script>
     $(function() {
-        var local = new Date();
 
-      //  var server = gt.now();
+        // Set options before first GoTime use
+        GoTime.setOptions({
+            AjaxURL: "/time",
+            WhenSynced: function(){
+                // Is called for the first sync
+                $('#server2').text((new GoTime()).toUTCString());
+
+                $('#offset').text(GoTime.getOffset());
+                $('#precision').text(GoTime.getPrecision());
+                $('#method').text(GoTime.getSyncCount() + " : " + GoTime.getLastMethod());
+            },
+            OnSync: function(){
+                // Calls on ever sync starting with the second sync
+                $('#offset').text(GoTime.getOffset());
+                $('#precision').text(GoTime.getPrecision());
+                $('#method').text(GoTime.getSyncCount() + " : " + GoTime.getLastMethod());
+            },
+            SyncInterval: 3000 // Set this often for demo purposes only
+        });
+
         $('#local').text((new Date()).toUTCString());
         $('#server').text((new GoTime()).toUTCString());
 
-        GoTime.setAjaxURL("/time")
-        GoTime.onSync(function(){
-            $('#server2').text((new GoTime()).toUTCString());
-            $('#offset').text(GoTime.getOffset());
-            $('#precision').text(GoTime.getPrecision());
+
+        var socket = new WebSocket("ws://" + window.location.host + "/ws");
+        socket.onmessage = function(msg){
+            GoTime.wsReceived(msg.data)
+        }
+
+        GoTime.wsSend(function(){
+            if (socket !== null && socket.readyState === 1) {
+                socket.send("time")
+                return true
+            }
+            return false
         });
+
 
     });
 </script>
