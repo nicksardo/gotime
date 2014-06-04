@@ -17,7 +17,7 @@ Setup
     AjaxURL: "/time",
 	SyncInitialTimeouts: [0,2000,5000,10000,50000, 55000], // First set of syncs (ms from initialization) [default]
     SyncInterval: 900000,       // Follow-up syncs happen at interval of 15 minutes [default]
-    WhenSync: function(time, method, offset, precision) {
+    WhenSynced: function(time, method, offset, precision) {
         console.log("Synced for first time")
     },
     OnSync: function(time, method, offset, precision){
@@ -25,18 +25,19 @@ Setup
     }
   })
 
+  //Give GoTime a function that'll send a websocket message to get the server time
   GoTime.wsSend(function(){
 		if (socket !== null && socket.readyState === 1) {
 			sendEvent("time")
 			return true // tell GoTime that websocket message was sent
 		}
 		return false // tell GoTime that websocket sending failed, try ajax webservice
-	});
+  });
 
 
     ....
-    // when processing websocket messages client-side
-    // if response contains time, notify GoTime immediately with the data
+    // When processing websocket messages client-side
+    // If response is the server telling the time, notify GoTime immediately with the data
     GoTime.wsReceived(msg.data)   // with msg.data = the unix (ms) time string
 
   
@@ -63,14 +64,6 @@ var time = new GoTime();
 or 
 var time = GoTime.now()
 // 1400539092790
-```
-
-You can also use these callbacks to wait until GoTime has synced.  
-```javascript    
-	// Calls a method after every sync, except for the first sync
-	GoTime.onSync(updateClockStats);
-	// After first sync, run this method
-	GoTime.whenSynced(run)
 ```
 
 **Internal Information**
