@@ -123,14 +123,15 @@ class window.GoTime
 
     @_offset = sample.offset
     @_precision = sample.precision
-    @_lastSyncTime = GoTime.now()
+    now = GoTime.now()
+    @_lastSyncTime = now
     @_lastSyncMethod = method
 
     if !@_firstSyncCallbackRan and @_firstSyncCallback?
       @_firstSyncCallbackRan = true
-      @_firstSyncCallback()
+      @_firstSyncCallback(now, method, sample.offset, sample.precision)
     else if @_onSyncCallback?
-      @_onSyncCallback()
+      @_onSyncCallback(now, method, sample.offset, sample.precision)
 
   @_dateFromService: (text) =>
     return new Date(parseInt(text))

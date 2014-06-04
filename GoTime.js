@@ -149,18 +149,20 @@
     };
 
     GoTime._reviseOffset = function(sample, method) {
+      var now;
       if (isNaN(sample.offset) || isNaN(sample.precision)) {
         return;
       }
       GoTime._offset = sample.offset;
       GoTime._precision = sample.precision;
-      GoTime._lastSyncTime = GoTime.now();
+      now = GoTime.now();
+      GoTime._lastSyncTime = now;
       GoTime._lastSyncMethod = method;
       if (!GoTime._firstSyncCallbackRan && (GoTime._firstSyncCallback != null)) {
         GoTime._firstSyncCallbackRan = true;
-        return GoTime._firstSyncCallback();
+        return GoTime._firstSyncCallback(now, method, sample.offset, sample.precision);
       } else if (GoTime._onSyncCallback != null) {
-        return GoTime._onSyncCallback();
+        return GoTime._onSyncCallback(now, method, sample.offset, sample.precision);
       }
     };
 
