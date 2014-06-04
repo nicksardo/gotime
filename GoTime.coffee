@@ -3,8 +3,7 @@ class window.GoTime
   @_offset: 0
   @_precision: null
 
-  @_syncSecondTimeout: 3000
-  @_syncThirdTimeout: 6000
+  @_syncInitialTimeouts: [0, 3000, 9000, 18000, 45000]
   @_syncInterval: 900000
   @_synchronizing: false
   @_lastSyncTime: null
@@ -27,12 +26,10 @@ class window.GoTime
   @_setupSync: () =>
     if GoTime._synchronizing is false
       GoTime._synchronizing = true
-      # Sync now
-      GoTime._sync()
-      # Second Sync
-      setTimeout(GoTime._sync, GoTime._syncSecondTimeout);
-      # Third Sync
-      setTimeout(GoTime._sync, GoTime._syncThirdTimeout);
+
+      # Initial syncs
+      setTimeout(GoTime._sync, time) for time in GoTime._syncInitialTimeouts
+
       # Sync repetitively
       setInterval GoTime._sync, GoTime._syncInterval
     return
@@ -57,10 +54,8 @@ class window.GoTime
   @setOptions = (options) =>
     if options.AjaxURL?
       @_ajaxURL = options.AjaxURL
-    if options.SyncSecondTimeout?
-      @_syncSecondTimeout = options.SyncSecondTimeout
-    if options.SyncSecondTimeout?
-      @_syncThirdTimeout = options.SyncThirdTimeout
+    if options.SyncInitialTimeouts?
+      @_syncInitialTimeouts = options.SyncInitialTimeouts
     if options.SyncInterval?
       @_syncInterval = options.SyncInterval
 

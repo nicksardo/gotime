@@ -7,9 +7,7 @@
 
     GoTime._precision = null;
 
-    GoTime._syncSecondTimeout = 3000;
-
-    GoTime._syncThirdTimeout = 6000;
+    GoTime._syncInitialTimeouts = [0, 3000, 9000, 18000, 45000];
 
     GoTime._syncInterval = 900000;
 
@@ -39,11 +37,14 @@
     }
 
     GoTime._setupSync = function() {
+      var time, _i, _len, _ref;
       if (GoTime._synchronizing === false) {
         GoTime._synchronizing = true;
-        GoTime._sync();
-        setTimeout(GoTime._sync, GoTime._syncSecondTimeout);
-        setTimeout(GoTime._sync, GoTime._syncThirdTimeout);
+        _ref = GoTime._syncInitialTimeouts;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          time = _ref[_i];
+          setTimeout(GoTime._sync, time);
+        }
         setInterval(GoTime._sync, GoTime._syncInterval);
       }
     };
@@ -72,11 +73,8 @@
       if (options.AjaxURL != null) {
         GoTime._ajaxURL = options.AjaxURL;
       }
-      if (options.SyncSecondTimeout != null) {
-        GoTime._syncSecondTimeout = options.SyncSecondTimeout;
-      }
-      if (options.SyncSecondTimeout != null) {
-        GoTime._syncThirdTimeout = options.SyncThirdTimeout;
+      if (options.SyncInitialTimeouts != null) {
+        GoTime._syncInitialTimeouts = options.SyncInitialTimeouts;
       }
       if (options.SyncInterval != null) {
         GoTime._syncInterval = options.SyncInterval;
