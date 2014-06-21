@@ -7,6 +7,8 @@
 
     GoTime._precision = null;
 
+    GoTime._history = [];
+
     GoTime._syncInitialTimeouts = [0, 3000, 9000, 18000, 45000];
 
     GoTime._syncInterval = 900000;
@@ -67,6 +69,10 @@
 
     GoTime.getSyncCount = function() {
       return GoTime._syncCount;
+    };
+
+    GoTime.getHistory = function() {
+      return GoTime._history;
     };
 
     GoTime.setOptions = function(options) {
@@ -153,11 +159,18 @@
       if (isNaN(sample.offset) || isNaN(sample.precision)) {
         return;
       }
-      GoTime._offset = sample.offset;
-      GoTime._precision = sample.precision;
       now = GoTime.now();
       GoTime._lastSyncTime = now;
       GoTime._lastSyncMethod = method;
+      GoTime._history.push({
+        Sample: sample,
+        Method: method,
+        Time: now
+      });
+      if (sample.precision <= GoTime._precision) {
+        GoTime._offset = sample.offset;
+        GoTime._precision = sample.precision;
+      }
       if (!GoTime._firstSyncCallbackRan && (GoTime._firstSyncCallback != null)) {
         GoTime._firstSyncCallbackRan = true;
         return GoTime._firstSyncCallback(now, method, sample.offset, sample.precision);

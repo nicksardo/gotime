@@ -3,6 +3,8 @@ class window.GoTime
   @_offset: 0
   @_precision: null
 
+  @_history: []
+
   @_syncInitialTimeouts: [0, 3000, 9000, 18000, 45000]
   @_syncInterval: 900000
   @_synchronizing: false
@@ -49,6 +51,9 @@ class window.GoTime
 
   @getSyncCount: () =>
     @_syncCount
+
+  @getHistory: () =>
+    @_history
 
   # Setters
   @setOptions = (options) =>
@@ -121,12 +126,23 @@ class window.GoTime
     if isNaN(sample.offset) or isNaN(sample.precision)
       return
 
-    @_offset = sample.offset
-    @_precision = sample.precision
     now = GoTime.now()
     @_lastSyncTime = now
     @_lastSyncMethod = method
 
+    # Add to history
+    @_history.push(
+      Sample: sample
+      Method: method
+      Time: now
+    )
+
+    # Only update the offset if the precision is improved
+    if sample.precision <= @_precision
+      @_offset = sample.offset
+      @_precision = sample.precision
+
+    # Callbacks
     if !@_firstSyncCallbackRan and @_firstSyncCallback?
       @_firstSyncCallbackRan = true
       @_firstSyncCallback(now, method, sample.offset, sample.precision)
@@ -135,28 +151,5 @@ class window.GoTime
 
   @_dateFromService: (text) =>
     return new Date(parseInt(text))
-
-#  @analyzeSamples: (samples) =>
-#    totalPrecision = samples.reduce (sum, sample) ->
-#        if sample?
-#          return sum + sample.precision
-#        else
-#          return sum
-#      , 0
-#
-#    totalWeight = 0
-#    weightedSum = samples.reduce (sum, sample) ->
-#        if sample?
-#          weight = (totalPrecision / sample.precision)
-#          totalWeight += weight
-#          return sum + (sample.offset * weight)
-#        else
-#          return sum
-#      , 0
-#
-#    @offset = weightedSum / totalWeight
-#
-#    console.log @offset.toFixed(0) + ' ' + totalPrecision.toFixed(0)
-#    return
 
 
