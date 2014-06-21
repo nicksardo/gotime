@@ -46,7 +46,7 @@ Setup
 
 Exposing Server Time  
 --------------------  
-Chronograph.io syncs using an ajax call and websocket messages. After the page load, the initial check is via ajax.  Once the websocket connection is open (if ever), further syncs are done over that protocol.  Using just an ajax service is satisfactory; however, you can get acheive more precise measurements by using a websocket.  For a specific test of Chronograph.io, the initial ajax call resulted in a precision=78ms.  The next call using websockets acheived precision=11ms.
+Chronograph.io syncs using an ajax call and websocket messages. After the page load, the initial check is via ajax.  Once the websocket connection is open (if ever), further syncs are done over that protocol.  Using just an ajax service is satisfactory; however, you can get acheive more precise measurements by using a websocket.  For a specific test of Chronograph.io, an ajax call on idle resulted in a precision=28ms.  Another call using websockets acheived a precision=3.5ms.
 
 **Web Service**  
 Simply a webservice that returns the server's unix (ms) time.  For go, see gotime.NowHandler or gotime.Now()
