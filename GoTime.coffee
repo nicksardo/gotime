@@ -1,7 +1,7 @@
 class window.GoTime
   @_syncCount: 0
   @_offset: 0
-  @_precision: null
+  @_precision: Infinity
 
   @_history: []
 

@@ -5,7 +5,7 @@
 
     GoTime._offset = 0;
 
-    GoTime._precision = null;
+    GoTime._precision = Infinity;
 
     GoTime._history = [];
 
