@@ -106,7 +106,7 @@
       return GoTime._reviseOffset(sample, "websocket");
     };
 
-    GoTime._ajaxSample = function(i, callback) {
+    GoTime._ajaxSample = function() {
       var req, requestTime;
       req = new XMLHttpRequest();
       req.open("GET", GoTime._ajaxURL);
@@ -137,7 +137,7 @@
         }
       }
       if (GoTime._ajaxURL != null) {
-        success = GoTime._ajaxSample(1);
+        success = GoTime._ajaxSample();
         if (success) {
           GoTime._syncCount++;
         }

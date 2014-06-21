@@ -83,7 +83,7 @@ class window.GoTime
 
 
   # Private Methods
-  @_ajaxSample = (i, callback) =>
+  @_ajaxSample: () =>
     req = new XMLHttpRequest()
     req.open("GET", GoTime._ajaxURL);
     req.onreadystatechange = () ->
@@ -107,7 +107,7 @@ class window.GoTime
         @_syncCount++
         return
     if GoTime._ajaxURL?
-      success = GoTime._ajaxSample 1
+      success = GoTime._ajaxSample()
       if success
         @_syncCount++
         return
