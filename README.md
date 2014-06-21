@@ -71,24 +71,24 @@ var time = GoTime.now()
 ```javascript
 GoTime.getOffset()
 ```
-// returns the difference between your clock and servertime.  Positive or negative
+returns the difference between your clock and servertime.  Positive or negative
 
 ```javascript
 GoTime.getPrecision()
 ```
-// returns the number of milliseconds GoTime may differ from servertime.
+returns the number of milliseconds GoTime may differ from servertime.
 
 ```javascript
 GoTime.getLastMethod()
 ```
-// returns "ajax" or "websocket" for the last sync method
+returns "ajax" or "websocket" for the last sync method
 
 ```javascript
 GoTime.getSyncCount()
 ```
-// returns amount of times GoTime has synced
+returns amount of times GoTime has synced
 
 ```javascript
 GoTime.getHistory()
 ```
-// returns list of objects { Sample: { offset: 0, precision: 0 }, Method: "websocket or ajax", Time: (Date) } of all syncs since page load
+returns list of objects { Sample: { offset: 0, precision: 0 }, Method: "websocket or ajax", Time: (Date) } of all syncs since page load
