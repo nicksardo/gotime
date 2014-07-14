@@ -58,7 +58,8 @@ As shown in the setup portion, implementing the messaging is up to you, but you 
 
 Usage After Setup  
 -----------------  
-At any time, you can call GoTime() to get a Date object.  However, GoTime might not have had a chance to sync yet, so either expect the internal clock offset to change.  
+At any time, you can call GoTime() to get a Date object.  Note that GoTime might not have had a chance to sync yet.
+
 ```javascript
 var time = new GoTime();
 // Mon May 19 2014 15:38:07 GMT-0700 (PDT)
