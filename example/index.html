@@ -5,18 +5,17 @@
 <body>
 Local:<br />
 <h1 id="local"></h1>
+
 Server:<br />
 <h1 id="server"></h1>
-Server 2:<br />
-<h1 id="server2"></h1>
 <h1 id="syncs">Sync History</h1>
 <table id="sync-table">
 </table>
-<br />
-Last Offset:<br />
-<h1 id="offset"></h1>
-Last Precision:<br />
-<h1 id="precision"></h1>
+
+<h1>Stats</h1>
+Offset:  <span id="offset"></span> with best precision: <span id="precision"></span>
+
+
 <script src="GoTime.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
@@ -25,32 +24,30 @@ Last Precision:<br />
         $('#sync-table').append("<tr><td>"+ (new Date(t)).toLocaleTimeString() +"</td><td>" + method + "</td><td>" + offset + "ms</td><td>" + precision + "ms</td></tr>")
     }
 
+    function updateData(t, method, off, precision){
+        var l = new Date();
+        var s = new GoTime();
+        $('#local').text(l.getTime());
+        $('#server').text(s.getTime());
+
+        $('#offset').text(GoTime.getOffset());
+        $('#precision').text(GoTime.getPrecision());
+
+        appendHistory(t, method, off, precision)
+
+        console.log(GoTime.getHistory())
+    }
+
 
     $(function() {
         // Set options before first GoTime use
         GoTime.setOptions({
             AjaxURL: "/time",
-            WhenSynced: function(t, method, off, precision){
-                // Is called for the first sync
-                $('#server2').text((new GoTime()).toUTCString());
-
-                $('#offset').text(GoTime.getOffset());
-                $('#precision').text(GoTime.getPrecision());
-                appendHistory(t, method, off, precision)
-            },
-            OnSync: function(t, method, off, precision){
-                // Calls on ever sync starting with the second sync
-                $('#offset').text(GoTime.getOffset());
-                $('#precision').text(GoTime.getPrecision());
-                appendHistory(t, method, off, precision)
-            },
+            WhenSynced: updateData, // Is called for the first sync
+            OnSync: updateData,// Calls on ever sync starting with the second sync
             SyncInitialTimeouts: [500, 3000, 9000, 15000],
             SyncInterval: 20000 // Set this often for demo purposes only
         });
-
-        $('#local').text((new Date()).toUTCString());
-        $('#server').text((new GoTime()).toUTCString());
-
 
         var socket = new WebSocket("ws://" + window.location.host + "/ws");
         socket.onmessage = function(msg){
