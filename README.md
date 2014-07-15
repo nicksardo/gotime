@@ -26,7 +26,7 @@ Setup
     }
   })
 
-  //Give GoTime a function that'll send a websocket message to get the server time
+  //Give GoTime a function that will send a websocket message to get the server time
   GoTime.wsSend(function(){
 		if (socket !== null && socket.readyState === 1) {
 			sendEvent("time")
@@ -49,7 +49,7 @@ Exposing Server Time
 Chronograph.io syncs using an ajax call and websocket messages. After the page load, the initial check is via ajax.  Once the websocket connection is open (if ever), further syncs are done over that protocol.  Using just an ajax service is satisfactory; however, you can get acheive more precise measurements by using a websocket.  For a specific test of Chronograph.io, an ajax call on idle resulted in a precision=28ms.  Another call using websockets acheived a precision=3.5ms.
 
 **Web Service**  
-Simply a webservice that returns the server's unix (ms) time.  For go, see gotime.NowHandler or gotime.Now()
+Simply a webservice that returns the server's unix (ms) time.  For go, see gotime.NowHandler or gotime.Now() in golang.
 
 
 **Websocket**  
