@@ -16,7 +16,7 @@ Setup
 ```javascript
   GoTime.setOptions({
     AjaxURL: "/time",
-	SyncInitialTimeouts: [0,2000,5000,10000,50000, 55000], // First set of syncs (ms from initialization) [default]
+	SyncInitialTimeouts: [0, 3000, 9000, 18000, 45000], // First set of syncs (ms from initialization) [default]
     SyncInterval: 900000,       // Follow-up syncs happen at interval of 15 minutes [default]
     WhenSynced: function(time, method, offset, precision) {
         console.log("Synced for first time")
