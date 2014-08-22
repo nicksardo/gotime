@@ -139,7 +139,7 @@ class window.GoTime
 
     # Only update the offset if the precision is improved
     if sample.precision <= @_precision
-      @_offset = sample.offset
+      @_offset = Math.round(sample.offset)
       @_precision = sample.precision
 
     # Callbacks

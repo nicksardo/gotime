@@ -168,7 +168,7 @@
         Time: now
       });
       if (sample.precision <= GoTime._precision) {
-        GoTime._offset = sample.offset;
+        GoTime._offset = Math.round(sample.offset);
         GoTime._precision = sample.precision;
       }
       if (!GoTime._firstSyncCallbackRan && (GoTime._firstSyncCallback != null)) {
