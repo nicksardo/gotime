@@ -117,7 +117,7 @@ class window.GoTime
     duration = responseTime - requestTime
     oneway = duration / 2
     return {
-      offset: serverTime - requestTime + oneway
+      offset: serverTime - requestTime - oneway
       precision: oneway
     }
 
@@ -151,5 +151,3 @@ class window.GoTime
 
   @_dateFromService: (text) =>
     return new Date(parseInt(text))
-
-
