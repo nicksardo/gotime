@@ -1,11 +1,9 @@
 GoTime
 ======
 
-Access the server's time from your browser with high precision.
+GoTime provides a browser client with a close approximation of the server's current time.
 
-In order to synchronize the stopwatch actions (start/stop/split), GoTime provides the browser with a close estimate of the server's current time.
-
-This project was built to be used by Go, but it can be used by any server-side language.  Just expose a web service that provides the current unix time (in milliseconds).
+This project was built to be used by Go, but it can be used by any server-side language. Just expose a web service that provides the current unix time (in milliseconds).
 
 Setup
 -----
